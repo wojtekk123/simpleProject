@@ -1,6 +1,5 @@
 package pl.codeconcept.e2d.service;
 
-import pl.codeconcept.e2d.Model.Role;
 import pl.codeconcept.e2d.Model.Users;
 import pl.codeconcept.e2d.repoitory.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,27 +14,16 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 
 
-@Service ("userDetailServiceImpl")
+@Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
-    public Users save(Users users) {
-        return userRepo.save(users);
-    }
 
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Users user = userRepo.findByUsername(userName).orElseThrow(() -> new UsernameNotFoundException("Invalid username"));
-
-
-        HashSet<GrantedAuthority> getAuthority = new HashSet<>();
-        for (Role role :user.getRole()){
-            getAuthority.add(new SimpleGrantedAuthority(role.getRoleName().name()));
-        }
-
-        return new User(user.getLogin(), user.getPassword(), getAuthority);
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        return userRepo.findByUsername(name);
     }
 }

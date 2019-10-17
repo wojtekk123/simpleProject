@@ -11,14 +11,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import pl.codeconcept.e2d.service.UserDetailServiceImpl;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+   private UserDetailServiceImpl userDetailService;
+
     @Autowired
-    @Qualifier("userDetailServiceImpl")
-    private UserDetailsService userDetailsService;
+    public WebSecurityConfig(UserDetailServiceImpl userDetailService) {
+        this.userDetailService = userDetailService;
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder () {
@@ -32,18 +36,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userDetailService)
                 .passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/registration").permitAll()
+                .antMatchers("/singup").permitAll()
                 .anyRequest().authenticated()
                 .and()
               .formLogin()
-                .loginPage("/login")
+                .loginPage("/singin")
                 .permitAll()
                 .and()
              .logout()
